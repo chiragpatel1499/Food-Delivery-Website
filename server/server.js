@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require('cors');
 
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -7,17 +8,20 @@ const dotenv = require("dotenv");
 const userRoute = require("./Routes/userRoute");
 const cartRoute = require("./Routes/cartRoute");
 const restaurantRoute = require("./Routes/restaurantRoute");
-// const deliveryRoute = require("./Routes/deliveryRoute");
+const deliveryRoute = require("./Routes/deliveryRoute");
 const orderRoute = require("./Routes/orderRoute");
-
+const rateRoute=require("./Routes/rateRoute");
 dotenv.config();
 
 app.use(express.json());
+app.use(cors());
+
 app.use("/user", userRoute);
 app.use("/cart", cartRoute);
 app.use("/restaurant", restaurantRoute);
 app.use("/order", orderRoute);
-// app.use("/delivery", deliveryRoute);
+app.use("/delivery", deliveryRoute);
+app.use("/rate",rateRoute);
 
 mongoose.connect(
   process.env.CONNECTION_STRING,
