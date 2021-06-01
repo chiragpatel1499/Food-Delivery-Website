@@ -17,47 +17,38 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { useMediaQuery } from "react-responsive";
 import axios from "axios";
-import { useStyles } from './MyProfile.style';
+import { useStyles } from "./MyProfile.style";
+
+import { useDispatch, useSelector } from "react-redux";
+import { updateProfile } from "../../store/user-actions";
 
 export default function MyProfile() {
-  // const isAvatarSmallDevices = useMediaQuery({
-  //   query: "(min-device-width: 500px)",
-  // });
-
+  const profile = useSelector((state) => state.user.profile);
+  const role = useSelector((state) => state.user.role);
+  const deliveryExecutive = useSelector(
+    (state) => state.user.deliveryExecutive
+  );
+  const dispatch = useDispatch();
   const classes = useStyles();
-
-  const [open, setOpen] = React.useState(false);
-  const token = localStorage.getItem("token");
+  const [open, setOpen] = useState(false);
   const [data, setData] = useState();
-  const [userdetails, setUserDetails] = useState({});
+  const token = localStorage.getItem("token");
+  // const [userdetails, setUserDetails] = useState({});
 
   const handleClickOpen = () => {
     setOpen(true);
   };
-
   const handleClose = () => {
     setOpen(false);
   };
-  
 
-  const headers = {
-    // "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-
-  const fetchUserDeatails = async () => {
-    const res = await axios.get("http://localhost:5000/user/getuser", {
-      headers: headers,
-    });
-    return res.data;
-  };
-  const updateProfile = async () => {
+  const updateProfileHandler = async () => {
     const updateData = {
       firstName: data.firstName,
       lastName: data.lastName,
       mobileNumber: data.mobileNumber,
     };
-    if (userdetails.role == "DE") {
+    if (role == "DE") {
       updateData.deliveryExecutiveLocation = {
         streetAddress: data.streetAddress,
         landmark: data.landmark,
@@ -70,45 +61,33 @@ export default function MyProfile() {
       };
       updateData.vehicleNumber = data.vehicleNumber;
     }
-    const res = await axios.post(
-      "http://localhost:5000/user/updateprofile",
-      updateData,
-      {
-        headers: headers,
-      }
-    );
-    const res1 = await fetchUserDeatails();
-    setUserDetails(res1);
+
+    dispatch(updateProfile(updateData));
     handleClose();
   };
 
   useEffect(() => {
-    (async () => {
-      const res = await fetchUserDeatails();
-      setUserDetails(res);
-      if (res.role == "DE") {
-        setData((data) => ({
-          ...data,
-          streetAddress:
-            res?.deliveryExecutive?.deliveryExecutiveLocation?.streetAddress,
-          landmark: res?.deliveyExecutive?.deliveryExecutiveLocation?.landmark,
-          area: res?.deliveryExecutive?.deliveryExecutiveLocation?.area,
-          city: res?.deliveryExecutive?.deliveryExecutiveLocation?.city,
-          zip: res?.deliveryExecutive?.deliveryExecutiveLocation?.zip,
-          state: res?.deliveryExecutive?.deliveryExecutiveLocation?.state,
-          country: res?.deliveryExecutive?.deliveryExecutiveLocation?.country,
-          vehicleNumber: res?.deliveryExecutive?.vehicleNumber,
-        }));
-      }
+    if (role == "DE") {
       setData((data) => ({
         ...data,
-        firstName: res?.firstName,
-        lastName: res?.lastName,
-        mobileNumber: res?.mobileNumber,
-        gender:res?.gender,
-        role: res?.role,
+        streetAddress:
+          deliveryExecutive?.deliveryExecutiveLocation?.streetAddress,
+        landmark: deliveryExecutive?.deliveryExecutiveLocation?.landmark,
+        area: deliveryExecutive?.deliveryExecutiveLocation?.area,
+        city: deliveryExecutive?.deliveryExecutiveLocation?.city,
+        zip: deliveryExecutive?.deliveryExecutiveLocation?.zip,
+        state: deliveryExecutive?.deliveryExecutiveLocation?.state,
+        country: deliveryExecutive?.deliveryExecutiveLocation?.country,
+        vehicleNumber: deliveryExecutive?.vehicleNumber,
       }));
-    })();
+    }
+    setData((data) => ({
+      ...data,
+      firstName: profile?.firstName,
+      lastName: profile?.lastName,
+      mobileNumber: profile?.mobileNumber,
+      gender: profile?.gender,
+    }));
   }, []);
 
   //Onchange for every input element.
@@ -129,14 +108,6 @@ export default function MyProfile() {
           <Grid container spacing={3}>
             <Grid item sm={12} xs={12} lg={12} md={12}>
               <div className={classes.editicon}>
-              
-                  {/* <Avatar
-                    alt="Remy Sharp"
-                    variant="circular"
-                    className={classes.avatarImage}
-                    src="https://i.kinja-img.com/gawker-media/image/upload/t_original/ijsi5fzb1nbkbhxa2gc1.png"
-                  /> */}
-               
                 {data?.gender == "male" ? (
                   <Avatar
                     alt="Remy Sharp"
@@ -192,7 +163,7 @@ export default function MyProfile() {
                   fullWidth
                   onChange={handleChange}
                 />
-                {userdetails?.role == "DE" ? (
+                {role == "DE" ? (
                   <>
                     <TextField
                       margin="dense"
@@ -267,7 +238,7 @@ export default function MyProfile() {
                 <Button onClick={handleClose} color="primary">
                   Cancel
                 </Button>
-                <Button onClick={updateProfile} color="primary">
+                <Button onClick={updateProfileHandler} color="primary">
                   Update
                 </Button>
               </DialogActions>
@@ -286,7 +257,7 @@ export default function MyProfile() {
                 <div className={classes.fields}>Email Id</div>
                 <div className={classes.fields}>Mobile Number</div>
 
-                {userdetails?.role == "DE" ? (
+                {role == "DE" ? (
                   <>
                     <div className={classes.fields}>Vehicle Number</div>
                     <div className={classes.fields}>Street Address</div>
@@ -312,63 +283,42 @@ export default function MyProfile() {
               <div>
                 <div className={classes.fields}>
                   {" "}
-                  {userdetails?.firstName} {userdetails?.lastName}{" "}
+                  {profile?.firstName} {profile?.lastName}{" "}
                 </div>
-                <div className={classes.fields}>{userdetails?.email}</div>
-                <div className={classes.fields}>
-                  {" "}
-                  {userdetails?.mobileNumber}
-                </div>
+                <div className={classes.fields}>{profile?.email}</div>
+                <div className={classes.fields}> {profile?.mobileNumber}</div>
 
-                {userdetails?.role == "DE" ? (
+                {role == "DE" ? (
                   <>
                     <div className={classes.fields}>
                       {" "}
-                      {userdetails?.deliveryExecutive?.vehicleNumber}{" "}
+                      {deliveryExecutive?.vehicleNumber}{" "}
                     </div>
                     <div className={classes.fields}>
                       {
-                        userdetails?.deliveryExecutive
-                          ?.deliveryExecutiveLocation?.streetAddress
+                        deliveryExecutive?.deliveryExecutiveLocation
+                          ?.streetAddress
                       }{" "}
                     </div>
                     <div className={classes.fields}>
-                      {
-                        userdetails?.deliveryExecutive
-                          ?.deliveryExecutiveLocation?.landmark
-                      }{" "}
+                      {deliveryExecutive?.deliveryExecutiveLocation?.landmark}{" "}
                     </div>
                     <div className={classes.fields}>
-                      {
-                        userdetails?.deliveryExecutive
-                          ?.deliveryExecutiveLocation?.area
-                      }
+                      {deliveryExecutive?.deliveryExecutiveLocation?.area}
                     </div>
                     <div className={classes.fields}>
-                      {
-                        userdetails?.deliveryExecutive
-                          ?.deliveryExecutiveLocation?.city
-                      }
+                      {deliveryExecutive?.deliveryExecutiveLocation?.city}
                     </div>
                     <div className={classes.fields}>
-                      {
-                        userdetails?.deliveryExecutive
-                          ?.deliveryExecutiveLocation?.state
-                      }
+                      {deliveryExecutive?.deliveryExecutiveLocation?.state}
                     </div>
 
                     <div className={classes.fields}>
-                      {
-                        userdetails?.deliveryExecutive
-                          ?.deliveryExecutiveLocation?.country
-                      }
+                      {deliveryExecutive?.deliveryExecutiveLocation?.country}
                     </div>
 
                     <div className={classes.fields}>
-                      {
-                        userdetails?.deliveryExecutive
-                          ?.deliveryExecutiveLocation?.zip
-                      }
+                      {deliveryExecutive?.deliveryExecutiveLocation?.zip}
                     </div>
                   </>
                 ) : null}

@@ -57,6 +57,7 @@ exports.getRestaurants = async (request, response, next) => {
       },
     },
   }, ]);
+  console.log(allRestaurantData)
   response.status(200).json(allRestaurantData);
 };
 

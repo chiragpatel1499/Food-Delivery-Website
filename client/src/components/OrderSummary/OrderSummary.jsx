@@ -54,15 +54,6 @@ const OrderSummary = (props) => {
    
     
   };
-  useEffect(() => {
-    (async function () {
-      
-      if (token) {
-        let data = decodeToken(token);
-        setAutheticated(data.role);
-      }
-    })();
-  });
   return (
     <>
       <div className={classes.root}>

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import {useDispatch, useSelector} from 'react-redux';
 import { Link } from "react-router-dom";
 
 import {
@@ -12,10 +13,13 @@ import {
 } from "@material-ui/core";
 import { useState } from "react";
 import FooterGrid from "../Footer/Footer";
-import { authUser } from "../../services/authUser";
+// import { authUser } from "../../services/authUser";
+import {authUser} from '../../store/user-actions'
 
-import NavAppBar from './../Navbar/Navbar';
+import NavAppBar from "./../Navbar/Navbar";
 import { useStyles } from "./SignIn.style";
+
+
 
 const avatarStyle = { backgroundColor: "black", fontsize: "large" };
 
@@ -25,10 +29,15 @@ const initialState = {
 };
 
 export default function SignIn(props) {
+  const dispatch=useDispatch()
+  const isAuthenticated = useSelector(state=>state.user.isAuthenticated)
+  useEffect(()=>{
+    if(isAuthenticated ===true){
+      props.history.replace("/");
+    }
+  },[isAuthenticated])
   const classes = useStyles();
-
   const { visible, onClose, Transition } = props;
-
   const [userData, setUserData] = useState(initialState);
   const [errors, setErrors] = useState();
 
@@ -47,7 +56,6 @@ export default function SignIn(props) {
   //  Login Validations
   const validate = (userData) => {
     const errors = {};
-
     if (!userData.email) {
       errors.email = "Email cant be empty!";
     } else if (
@@ -62,7 +70,6 @@ export default function SignIn(props) {
     } else if (userData.password.length < 6) {
       errors.password = "Password length must be 6 characters.";
     }
-
     // return errors;
     setErrors(errors);
   };
@@ -72,12 +79,11 @@ export default function SignIn(props) {
 
     validate(userData);
 
-
     if (errors === {}) {
       return errors;
     } else {
-      //axios call
-      loginUser(userData);
+      // loginUser(userData);
+      dispatch(authUser(userData));
     }
   };
 
@@ -85,6 +91,7 @@ export default function SignIn(props) {
     //Posting Data to the Server.
 
     const response = await authUser(userData, props);
+    console.log(response);
     if (response != null) {
       setErrors((errors) => ({ ...errors, authError: response.message }));
     }

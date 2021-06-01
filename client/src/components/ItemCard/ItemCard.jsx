@@ -12,12 +12,16 @@ import axios from "axios";
 import { decodeToken } from "../../services/authUser";
 import StarRateIcon from "@material-ui/icons/StarRate";
 import { useStyles } from "./ItemCard.style";
-
-function Alert(props) {
+import {useSelector,useDispatch} from 'react-redux'
+import { addFoodToCart } from "../../store/cart-actions";
+function Alert(props) { 
   return <MuiAlert elevation={10} variant="filled" {...props} />;
 }
 
 export default function ItemCard(props) {
+  const isAuthenticated = useSelector(state=>state.user.isAuthenticated)
+  const role = useSelector(state=>state.user.role)
+  const dispatch = useDispatch()
   const classes = useStyles();
   const {
     restaurantId,
@@ -28,50 +32,22 @@ export default function ItemCard(props) {
     foodType,
     foodPrice,
     _id,
-    avgRating,
+    foodRating,
     customProps,
   } = props;
-
+  const avgRating =foodRating.reduce((a, b) => a + (b['rating'] || 0), 0)/foodRating.length
   const [openSnackBar, setSnackBar] = useState(false); //open close snack bar
-  const token = localStorage.getItem("token");
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
+  
   const data = {
     foodId: _id,
     restaurantId: restaurantId,
   };
-  let authenticated = "";
-
-  if (token) {
-    authenticated = decodeToken(token);
-  }
 
   const handleCart = async (_id) => {
-    if (authenticated && authenticated.role == "NU") {
-      const res = await axios.post(
-        "http://localhost:5000/cart/addtocart",
-        data,
-        {
-          headers: headers,
-        }
-      );
+    if (isAuthenticated && role == "NU") {
+      dispatch(addFoodToCart(data))
       setSnackBar(true);
-    } else if (authenticated && authenticated.role == "DE") {
-      setSnackBar(true);
-    } else {
-      customProps.history.replace("/login");
-    }
-    if (authenticated) {
-      const res = await axios.post(
-        "http://localhost:5000/cart/addtocart",
-        data,
-        {
-          headers: headers,
-        }
-      );
-
+    } else if (isAuthenticated && role == "DE") {
       setSnackBar(true);
     } else {
       customProps.history.replace("/login");
@@ -138,7 +114,7 @@ export default function ItemCard(props) {
           autoHideDuration={1000}
           onClose={handleCloseSnackBar}
         >
-          {authenticated && authenticated.role == "DE" ? (
+          {isAuthenticated && role == "DE" ? (
             <Alert
               onClose={handleCloseSnackBar}
               style={{ backgroundColor: "red", width: "300px" }}

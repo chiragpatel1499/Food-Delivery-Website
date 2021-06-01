@@ -17,12 +17,12 @@ exports.authenticate = async (request, response, next) => {
   const password = request.body.password;
   const userDataCollection = mongoose.model("user", userSchema, "users");
   const user = await userDataCollection.findOne({ email });
- console.log(user);
+//  console.log(user);
   // generates the jwt token
   if (user && bcrypt.compareSync(password, user.password)) {
     const token = jwt.sign({ userId: user._id, email: user.email, password: user.password, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
-    return response.status(200).json({ token: token, firstName: user.firstName })
-
+    
+    return response.status(200).json({ token: token,user:user})
   } else if (!user) {
     response.status(404).json({ message: "User not found" });
   } else {

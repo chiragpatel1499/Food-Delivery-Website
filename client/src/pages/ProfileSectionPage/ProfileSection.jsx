@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
+import {useDispatch, useSelector} from 'react-redux'
+
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Container from "@material-ui/core/Container";
@@ -15,8 +17,10 @@ import FooterGrid from "../../components/Footer/Footer";
 import { decodeToken } from "../../services/authUser";
 import { useStyles } from "./ProfileSectionPage.style";
 import Chart from "../../components/Chart/Chart";
-
+import {getPastOrders} from '../../store/order-actions'
 export default function ProfileSection() {
+  const dispatch = useDispatch()
+  const role = useSelector(state=>state.user.role)
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = React.useState(0);
   var token = localStorage.getItem("token");
@@ -24,6 +28,9 @@ export default function ProfileSection() {
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
+  useEffect(()=>{
+    dispatch(getPastOrders(role));
+  },[role])
 
   return (
     <div className={classes.root}>

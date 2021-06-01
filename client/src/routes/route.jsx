@@ -1,18 +1,20 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-
-const currentUser = localStorage.getItem("token");
-const role = localStorage.getItem("role");
+import { useSelector } from "react-redux";
+// const currentUser = localStorage.getItem("token");
+// const role = localStorage.getItem("role");
 
 export const AuthRoute = ({ component: Component, ...rest }) => {
+  const role = useSelector((state) => state.user.role);
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   //   const { authenticated } = useSelector((state) => state.auth);
-  const currentUser = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+  // const currentUser = localStorage.getItem("token");
+  // const role = localStorage.getItem("role");
   return (
     <Route
       {...rest}
       render={(props) => {
-        if (currentUser == null) {
+        if (isAuthenticated === false) {
           return <Redirect to="/" />;
         } else {
           return <Component {...props}></Component>;
@@ -23,14 +25,16 @@ export const AuthRoute = ({ component: Component, ...rest }) => {
 };
 
 export const UserRoute = ({ component: Component, ...rest }) => {
-  const currentUser = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-
+  const role = useSelector((state) => state.user.role);
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  // const currentUser = localStorage.getItem("token");
+  // const role = localStorage.getItem("role");
+  console.log('IsAuthenticated ',isAuthenticated)
   return (
     <Route
       {...rest}
       render={(props) => {
-        if (currentUser == null) {
+        if (isAuthenticated === false) {
           return <Redirect to="/" />;
         } else {
           if (role === "DE") {
@@ -45,13 +49,15 @@ export const UserRoute = ({ component: Component, ...rest }) => {
 };
 
 export const DeliveryExecutiveRoute = ({ component: Component, ...rest }) => {
-  const currentUser = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+  const role = useSelector((state) => state.user.role);
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  // const currentUser = localStorage.getItem("token");
+  // const role = localStorage.getItem("role");
   return (
     <Route
       {...rest}
       render={(props) => {
-        if (currentUser == null) {
+        if (isAuthenticated === false) {
           return <Redirect to="/" />;
         } else {
           if (role === "NU") {

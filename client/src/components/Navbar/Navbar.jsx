@@ -24,7 +24,14 @@ import Badge from "@material-ui/core/Badge";
 import { useStyles, StyledBadge } from "./NavBar.style";
 import { useEffect } from "react";
 
+import { useDispatch, useSelector } from "react-redux";
+import { userActions } from "../../store/user";
+import { cartActions } from "../../store/cart";
+
 export default function NavAppBar() {
+  const dispatch = useDispatch();
+  const cartLength = useSelector((state) => state.cart.cartFoodList.length);
+  console.log("cartLength", cartLength);
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -36,7 +43,7 @@ export default function NavAppBar() {
   }
 
   const [userName, setuserName] = useState();
-  const [cartLength, setcartLength] = useState(0);
+  // const [cartLength, setcartLength] = useState(0);
 
   const token = localStorage.getItem("token");
 
@@ -49,15 +56,16 @@ export default function NavAppBar() {
 
   if (token) {
     authenticated = decodeToken(token);
-
   } else {
     <Redirect to="/"></Redirect>;
   }
 
-
-
   const handleLogout = () => {
-    logout();
+    // logout();
+    console.log("logout");
+    dispatch(userActions.logout());
+    dispatch(cartActions.clearCart());
+    localStorage.removeItem("token");
   };
 
   useEffect(() => {
@@ -123,10 +131,16 @@ export default function NavAppBar() {
                 onClick={handleDrawerToggle}
               >
                 <div className={classes.navbarDrawerLinks}>
-                <ShoppingCartOutlinedIcon
-                              
-                            />
-                  <span className={classes.navbarLinkCard}>Cart</span>
+                  {/* <ShoppingCartOutlinedIcon /> */}
+                  {/* <IconButton aria-label="cart"> */}
+                    <StyledBadge badgeContent={cartLength} color="secondary">
+                      {/* <ShoppingCartIcon /> */}
+                      <ShoppingCartOutlinedIcon />
+                    </StyledBadge>
+                  {/* </IconButton> */}
+                  <span className={classes.navbarLinkCard}>
+                    Cart
+                  </span>
                 </div>
               </Link>
             </>
@@ -259,11 +273,15 @@ export default function NavAppBar() {
                         to={`/cart`}
                       >
                         <div className={classes.navbarLinks}>
-                         
-                            <ShoppingCartOutlinedIcon
-                              
-                            />
-                         
+                          {/* <IconButton aria-label="cart"> */}
+                          <StyledBadge
+                            badgeContent={cartLength}
+                            color="secondary"
+                          >
+                            {/* <ShoppingCartIcon /> */}
+                            <ShoppingCartOutlinedIcon />
+                          </StyledBadge>
+                          {/* </IconButton> */}
                           <span className={classes.navbarLinkCard}>Cart</span>
                         </div>
                       </Link>

@@ -25,13 +25,16 @@ import {
   handleCartPlaceOrder,
 } from "../../services/CartService";
 
+import { useDispatch, useSelector } from "react-redux";
+import { addFoodToCart, removeFoodFromCart, removeFoodItem } from "../../store/cart-actions";
 export default function Cart(props) {
+  const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
+
   const classes = useStyles();
-  const [totalprice, setTotalPrice] = useState(0);
-  const [items, setItems] = useState([]);
   const [drawer, setDrawer] = useState(false);
   const [address, setAddress] = useState(null);
-  const [restaurant, setRestaurant] = useState({});
+  // const [restaurant, setRestaurant] = useState({});
 
   const token = localStorage.getItem("token");
 
@@ -42,27 +45,7 @@ export default function Cart(props) {
 
   let totalValue = 0;
 
-  const FetchCartData = async () => {
-    const res = await axios.get("http://localhost:5000/cart/getcart", {
-      headers: headers,
-    });
-    setTotalPrice(res.data.totalAmount);
-    setItems(res.data.cartFoodList);
-    setRestaurant(res.data.restaurantDetails);
-    return res;
-    /* const res =  fetchUserCartDeatails();
-    return res; */
-  };
-
-  useEffect(() => {
-    (async function () {
-      const result = await FetchCartData();
-      console.log("result", result)
-      setItems(result?.data.cartFoodList);
-      setRestaurant(result?.data.restaurantDetails);
-      setTotalPrice(result?.data.totalAmount);
-    })();
-  }, []);
+  useEffect(() => {}, []);
 
   const handleDrawer = () => {
     if (drawer === true) setDrawer(false);
@@ -82,14 +65,13 @@ export default function Cart(props) {
   };
 
   //increment data
-  const handleIncrement = async (currentItem) => {
+  const handleIncrement = (currentItem) => {
     const data = {
       foodId: currentItem.foodItem._id,
-      restaurantId: restaurant.restaurantId,
+      restaurantId: cart.restaurantDetails.restaurantId,
     };
-
-    await incrementCartItem(data);
-    FetchCartData();
+    dispatch(addFoodToCart(data));
+    // await incrementCartItem(data);
   };
 
   const handleDecrement = async (currentItem) => {
@@ -97,18 +79,16 @@ export default function Cart(props) {
       foodId: currentItem.foodItem._id,
     };
 
-    await decrementCartItem(data);
-    FetchCartData();
+    dispatch(removeFoodFromCart(data));
+    // await decrementCartItem(data);
   };
 
   const removeItem = async (currentItem) => {
     const data = {
       foodId: currentItem.foodItem._id,
     };
-
-    const res = await removeCartItem(data);
-
-    const response = await FetchCartData();
+    dispatch(removeFoodItem(data))
+    // const res = await removeCartItem(data);
   };
   //Drawer Calling Const
   const drawerTag = (
@@ -125,13 +105,13 @@ export default function Cart(props) {
   return (
     <div className={classes.root}>
       <NavAppBar />
-      {items?.length > 0 ? (
+      {cart.cartFoodList?.length > 0 ? (
         <Container maxWidth="lg">
           <Grid container spacing={2}>
             <Grid item xs={8} lg={8}>
               <Paper className={classes.paper}>
                 {/* first card */}
-                {items?.map((item) => {
+                {cart.cartFoodList?.map((item) => {
                   return (
                     <>
                       <Card
@@ -206,7 +186,7 @@ export default function Cart(props) {
                   <hr />
                   <Grid item container justify="flex-end">
                     <Typography variant="h5">
-                      <b>Total Price:{totalprice} </b>
+                      <b>Total Price:{cart.totalAmount} </b>
                     </Typography>
                   </Grid>
                 </b>
@@ -236,7 +216,7 @@ export default function Cart(props) {
                           {address.landmark},{address.area} , {address.city},{" "}
                           {address.zip},{address.state}, {address.country}.
                         </div>
-                        <hr /> <p>Total Amount: {totalprice}</p>
+                        <hr /> <p>Total Amount: {cart.totalAmount}</p>
                       </>
                     ) : null}
                   </Box>

@@ -25,15 +25,16 @@ import axios from "axios";
 import { getRestaurantById } from "../../services/axiosData";
 import SimpleRating from "../../components/Rating/Rating";
 import { GreenCheckbox,useStyles } from './RestaurantContainer.style';
-
+import {useSelector} from 'react-redux';
 
 
 const RestaurantContainer = (props) => {
+  const restaurantData = useSelector(state=>state.restaurant.restaurants.find(res=>res._id==props.match.params.restaurantId))
   const classes = useStyles();
   const [items, setItems] = useState([]);
   const [vegChecked, setVegChecked] = useState(false);
   // const allVeg = items.filter((item) => item.foodType === "Veg");
-  const [restaurantData, setRestaurant] = useState({});
+  // const [restaurantData, setRestaurant] = useState({});
   const [open, setOpen] = useState(false);
   const token = localStorage.getItem("token");
   const headers = {
@@ -50,11 +51,12 @@ const RestaurantContainer = (props) => {
     setOpen(false);
   };
   useEffect(() => {
-    (async function () {
-      const res = await getRestaurantById(props.match.params.restaurantId);
-      setRestaurant(res);
-      setItems(res.menuDetails);
-    })();
+    // (async function () {
+      // const res = await getRestaurantById(props.match.params.restaurantId);
+    //   setRestaurant(res);
+    //   setItems(res.menuDetails);
+    // })();
+    setItems(restaurantData.menuDetails)
   }, []);
 
   //filter based on  search
