@@ -56,6 +56,7 @@ export default function AllRestaurants() {
   };
 
   useEffect(() => {
+    
     dispatch(getFilterRestaurants(city, search,vegChecked));
   }, [city, search,vegChecked]);
 

@@ -155,7 +155,6 @@ userSchema.methods.resetPassword =function(newPassword){
 }
 
 userSchema.methods.updateUserProfile=function(updatedata){
-  console.log("In module updateprofile",updatedata)
   if(this.role=="DE"){
     this.deliveryExecutive.deliveryExecutiveLocation=updatedata.deliveryExecutive.deliveryExecutiveLocation;
     this.deliveryExecutive.vehicleNumber=updatedata.deliveryExecutive.vehicleNumber;

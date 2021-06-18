@@ -31,7 +31,6 @@ import { cartActions } from "../../store/cart";
 export default function NavAppBar() {
   const dispatch = useDispatch();
   const cartLength = useSelector((state) => state.cart.cartFoodList.length);
-  console.log("cartLength", cartLength);
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("sm"));
 

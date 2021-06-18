@@ -17,7 +17,6 @@ exports.authenticate = async (request, response, next) => {
   const password = request.body.password;
   const userDataCollection = mongoose.model("user", userSchema, "users");
   const user = await userDataCollection.findOne({ email });
-//  console.log(user);
   // generates the jwt token
   if (user && bcrypt.compareSync(password, user.password)) {
     const token = jwt.sign({ userId: user._id, email: user.email, password: user.password, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -31,7 +30,6 @@ exports.authenticate = async (request, response, next) => {
 };
 
 exports.postUser = async (request, response, next) => {
-  console.log("In Post User Controller");
   const normalUser = new userDataCollection({
     firstName: request.body.firstName,
     lastName: request.body.lastName,
@@ -48,10 +46,8 @@ exports.postUser = async (request, response, next) => {
   normalUser
     .save((err, res) => {
       if (err) {
-        console.log("erreowqkpeowoek",err);
         response.status(400).json({ message: "User is already exists with this email!!" });
       }
-      console.log(res);
       response.status(201).json({ message: "User Created Successfully" });
     })
 };
@@ -155,8 +151,6 @@ exports.resetPassword = async (request, response, next) => {
   var userData = await userDataCollection.findOne({ email: email });
   if (userData) {
     userData = await userData.resetPassword(bcrypt.hashSync(newPassword, 10));
-    // console.log("bcrypt : ",bcrypt.compareSync(newPassword, userData.password))
-    // console.log("useData :",userData);
 
     if (userData) {
       response.status(200).json({ message: "Your Password is reset successfully" });
@@ -192,6 +186,5 @@ exports.countNumberOfRestaurantOrderByUser = async(request,response,next)=>{
   deliveryExecutiveChartData.forEach((data,index)=>{
     chartData.push([data._id,data.count]);
   })
-  console.log(chartData);
   response.json(chartData);
 }

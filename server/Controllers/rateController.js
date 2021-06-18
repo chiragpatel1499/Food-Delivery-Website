@@ -28,7 +28,6 @@ exports.addRatingToFood = async (request, response, next) => {
     const restaurantId = request.body.restaurantId;
     const rating = request.body.rating;
     const ratingReview = request.body.ratingReview;
-    console.log("restaurrantId",restaurantId);
     const foodId = request.body.foodList.map((item) => {
         return item.foodItem._id;
     });
@@ -37,9 +36,7 @@ exports.addRatingToFood = async (request, response, next) => {
         rating: rating,
         ratingReview: ratingReview,
     }
-    // console.log(foodRating);
-    // console.log(request.body.foodList);
-    console.log("foodId",foodId)
+
     let result;
     await foodId.forEach(async (value) => {
         result = await restaurantDataCollection.findOneAndUpdate(
@@ -52,13 +49,11 @@ exports.addRatingToFood = async (request, response, next) => {
             },
             { $push: { "menuDetails.$.foodRating": foodRating } }
         );
-        // console.log("Result",result);
     })
 
 }
 
 exports.addRatingToRestaurant = async (request, response, next) => {
-    console.log("ratingRating")
     const userId = request.body.userId;
     const restaurantId = mongoose.Types.ObjectId(request.body.restaurantId);
     const rating = request.body.rating;
@@ -68,7 +63,6 @@ exports.addRatingToRestaurant = async (request, response, next) => {
         rating: rating,
         ratingReview: ratingReview,
     }
-    console.log("ratingRating", ratingObj)
     const ratingData = await restaurantDataCollection.findByIdAndUpdate({ _id: restaurantId }, { $push: { restaurantRatings: ratingObj } })
     response.json(ratingData);
 }

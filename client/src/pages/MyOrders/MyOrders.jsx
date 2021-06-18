@@ -30,6 +30,7 @@ function MyOrders(props) {
         headers: headers,
       }
     );
+    console.log(res.data)
     return res.data;
   };
 

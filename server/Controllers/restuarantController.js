@@ -7,7 +7,6 @@ const restaurantSchema = require("../Models/restaurantModel");
 const userSchema = require("../Models/restaurantModel");
 
 exports.postRestuarant = async (request, response, next) => {
-  console.log("In post Restaurant!");
 
   // to add restuarant
   const restaurantDataCollection = mongoose.model(
@@ -33,7 +32,6 @@ exports.postRestuarant = async (request, response, next) => {
       response.send(restaurant).status(200);
     })
     .catch((error) => {
-      console.log("Error:", error);
       next(error);
     });
 };
@@ -57,7 +55,6 @@ exports.getRestaurants = async (request, response, next) => {
       },
     },
   }, ]);
-  console.log(allRestaurantData)
   response.status(200).json(allRestaurantData);
 };
 
@@ -219,5 +216,4 @@ exports.searchRestaurants = async (req, res, next) => {
     //     res.send(err)
     // });
     // let searchRestaurants= await restaurantDataCollection.aggregate([{"search city":{$in:[city,'$restaurantLocation.city']}}]).exec(function(err,data){
-    // console.log(searchRestaurants);
 }

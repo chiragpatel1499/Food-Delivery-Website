@@ -58,7 +58,6 @@ exports.postOrder = async (request, response, next) => {
       var temp = foodListCart.find((food1) => {
         return food1.foodId.toString() == food._id.toString();
       });
-      console.log("food",food);
       if (temp != undefined) {
         orderFoodList.push({
           foodItem: food,
@@ -91,6 +90,7 @@ exports.postOrder = async (request, response, next) => {
         // sendEmail.sendMails([userData.email], "Foodizz Order otp", html);
         // sends the mail to the user
         userData.clearCart();
+        console.log("order in post ",order)
         response
           .status(201)
           .json({
@@ -99,7 +99,6 @@ exports.postOrder = async (request, response, next) => {
           });
       })
       .catch((err) => {
-        console.log(err);
         response.status(500).json({
           message: "Internal Server Error",
           error: err,
@@ -206,7 +205,6 @@ exports.getOrderDetailByOrderId = async (request, response, next) => {
       }
     }
   } catch (err) {
-    console.log('Error =======================', err);
     response.status(400).json({
       message: "Order not found!!!"
     });

@@ -33,7 +33,6 @@ exports.addDeliveryExecutive = async (request, response, next) => {
         orderData.addDeliveryExecutive(deliverExecutiveUserId);
         deliveryExecutiveData.changeDeliveryExecutiveStatus();
         const userData = await userDataCollection.findById({ _id: orderData.userId }, 'email');
-        console.log("userData for email", userData);
         // const html = orderData.orderOtp.toString();
         const html=`<!DOCTYPE html>
         <html lang="en">
@@ -58,7 +57,6 @@ exports.addDeliveryExecutive = async (request, response, next) => {
              </div>
         </body>
         </html>`
-        console.log("html ", html)
         sendEmail.sendMails([userData.email], "Foodizz Order otp", html);
         response.status(200).json({
           message: "you have accepted the order"
@@ -100,7 +98,6 @@ exports.changeOrderStatus = async (request, response, next) => {
   const deliveryExecutiveData = await userDataCollection.findById({
     _id: deliverExecutiveUserId,
   });
-  //   console.log("orderData",orderData);
   if (orderStatus == "Out For Delivery") {
     if (orderData.orderStatus == "Accepted") {
       orderData.changeOrderStatus(orderStatus);
@@ -177,7 +174,6 @@ exports.getOrderDetailAcceptedByDeliveryExecutive = async (request, response, ne
       response.status(200).json(orderData);
     }
   } catch (err) {
-    console.log(err);
     response.status(400).json({
       message: "Order not found!!!"
     });
@@ -207,7 +203,6 @@ exports.getDeliveryExecutivePastOrders = async (request, response, next) => {
       response.status(200).json(orderData);
     }
   } catch (err) {
-    console.log(err);
     response.status(400).json({
       message: "Order not found!!!"
     });
@@ -240,7 +235,6 @@ exports.countNumberOfRestaurantOrderByDeliverExecutive = async (request, respons
   deliveryExecutiveChartData.forEach((data,index)=>{
     chartData.push([data._id,data.count]);
   })
-  console.log(chartData);
   response.json(chartData);
   // const deliverExecutiveId = request.body.userId;
 }
@@ -271,16 +265,12 @@ exports.monthlyBasedRatingForDeliveryExecutive = async (request, response, next)
       _id: mongoose.Types.ObjectId(deliverExecutiveId),
     }, 'deliveryExecutive.deliveryExecutiveRatings'
   )
-  // console.log(deliveryExecutiveChartData.deliveryExecutive.deliveryExecutiveRatings)
-  console.log(new Date().getYear());
   deliveryExecutiveChartData.deliveryExecutive.deliveryExecutiveRatings.forEach((rate) => {
     if (new Date(rate.ratingDateTime).getYear() >= new Date().getYear()) {
       monthsArray[new Date(rate.ratingDateTime).getMonth()][1] += rate.rating;
     }
   })
-  console.log(monthsArray);
   //   deliveryExecutiveChartData.deliveryExecutive.deliveryExecutiveRating.forEach((rate)=>{
-  //     console.log(rate)
   //   })
   response.json(monthsArray);
 }

@@ -26,7 +26,6 @@ const authAPI = async function (req, res, next) {
     const token = authHeader.split(" ")[1];
     jwt.verify(token, process.env.JWT_SECRET, async function (err, decoded) {
       if (err) {
-        console.log(err);
         throw err;
       }
       // console.log(decoded);
@@ -43,7 +42,6 @@ const authAPI = async function (req, res, next) {
       }
     });
   } catch (e) {
-    console.log(e);
     res.status(400).send({ message: "Unauthorized Request" });
   }
 };

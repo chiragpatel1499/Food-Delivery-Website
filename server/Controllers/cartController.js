@@ -7,7 +7,6 @@ const auth = require("../Helpers/authApi");
 exports.getCart = async (request, response, next) => {
 
   const userId = request.body.userId;
-  // console.log("User ID", userId);
   const userDataCollection = mongoose.model("user", userSchema, "users");
   const restaurantDataCollection = mongoose.model(
     "restaurant",
@@ -21,7 +20,6 @@ exports.getCart = async (request, response, next) => {
     cartData.cart.restaurantId == null ||
     cartData.cart.restaurantId == undefined
   ) {
-    // console.log("Restaurant Id in if cart", cartData.cart.restaurantId);
     response.status(200).json({ message: "Your Cart is Empty" });
 
   } else {
@@ -50,9 +48,9 @@ exports.getCart = async (request, response, next) => {
         }
       });
       const cartFullData = {
-        restaurantDetails: restaurantDetails,
+        List,restaurantDetails: restaurantDetails,
         totalAmount: totalAmount,
-        cartFoodList: cartFoodList,
+        cartFoodList: cartFood
       };
       response.status(200).json(cartFullData);
     }
@@ -60,7 +58,6 @@ exports.getCart = async (request, response, next) => {
 };
 
 exports.addToCart = async (request, response, next) => {
-  console.log("IN add to cart outside");
   const foodId = request.body.foodId;
   if (foodId == undefined || foodId == null) {
     response.status(400).json({ message: "Food is not added" });
@@ -76,8 +73,6 @@ exports.addToCart = async (request, response, next) => {
 };
 
 exports.reduceQuantity = async (request, response, next) => {
-
-  console.log("In reduceQuantity");
   const foodId = request.body.foodId;
   const userId = request.body.userId;
   const userDataCollection = mongoose.model("user", userSchema, "users");
@@ -88,7 +83,6 @@ exports.reduceQuantity = async (request, response, next) => {
 };
 
 exports.removeFromCart = async (request, response, next) => {
-  console.log("In removeFromCart");
   const foodId = request.body.foodId;                            // authenticated api gets the userId and role
   const userId = request.body.userId;
   const userDataCollection = mongoose.model("user", userSchema, "users");
@@ -100,7 +94,6 @@ exports.removeFromCart = async (request, response, next) => {
 
 exports.clearCart = async (request, response, next) => {
   // auth.authApi(request, response, next);                     // authenticated api gets the userId and role
-  console.log("In Clear Cart");
   const userId = request.body.userId;
   const userDataCollection = mongoose.model("user", userSchema, "users");       // accessing the model
   userDataCollection.findById(userId).then((user) => {
